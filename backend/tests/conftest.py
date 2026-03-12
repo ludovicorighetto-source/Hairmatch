@@ -16,7 +16,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 from httpx import ASGITransport, AsyncClient
 from jose import jwt
-from sqlalchemy import event
+from sqlalchemy import event, types
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
@@ -25,6 +25,30 @@ from app.models.enums import AvailabilityStatus, SubscriptionPlan, UserRole
 from app.models.professional_profile import ProfessionalProfile
 from app.models.salon_profile import SalonProfile
 from app.models.user_profile import UserProfile
+
+
+# ── SQLite UUID type adapter ────────────────────────────────────────────────────
+
+class SQLiteUUID(types.TypeDecorator):
+    """Store UUID as a VARCHAR(36) string in SQLite."""
+
+    impl = types.String(36)
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if isinstance(value, uuid.UUID):
+            return str(value)
+        return str(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        try:
+            return uuid.UUID(value)
+        except (ValueError, AttributeError):
+            return value
 
 # ── JWT helpers ─────────────────────────────────────────────────────────────────
 
@@ -87,28 +111,55 @@ async def db_engine():
     await engine.dispose()
 
 
+class SQLiteArrayJSON(types.TypeDecorator):
+    """
+    Store a Python list as a JSON-encoded string in SQLite.
+    Always returns a list on read (even if stored as null/empty).
+    """
+
+    impl = types.Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        import json
+        if value is None:
+            return "[]"
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        import json
+        if value is None:
+            return []
+        try:
+            result = json.loads(value)
+            if isinstance(result, list):
+                return result
+            return []
+        except (ValueError, TypeError):
+            return []
+
+
 def _create_tables(conn):
     """Create all tables using SQLite-compatible metadata."""
-    # Override PostgreSQL-specific column types for SQLite
     import sqlalchemy as sa
-    from sqlalchemy import text
 
-    # Patch enum types to use VARCHAR for SQLite
+    # Patch column types that SQLite doesn't support
     for table in Base.metadata.tables.values():
         for col in table.columns:
-            if hasattr(col.type, "name") and isinstance(col.type, sa.Enum):
-                col.type = sa.String(50)
-            # Replace PostgreSQL ARRAY with JSON for SQLite
-            if col.type.__class__.__name__ == "ARRAY":
-                col.type = sa.JSON()
-            # Replace JSONB with JSON
-            if col.type.__class__.__name__ == "JSONB":
-                col.type = sa.JSON()
-            # Replace PostgreSQL UUID with String
+            # PostgreSQL UUID → SQLite VARCHAR with Python UUID conversion
             if col.type.__class__.__name__ == "UUID":
-                col.type = sa.String(36)
-            # Replace Numeric with Float
-            if col.type.__class__.__name__ == "Numeric":
+                col.type = SQLiteUUID()
+            # PostgreSQL Enum → VARCHAR
+            elif isinstance(col.type, sa.Enum):
+                col.type = sa.String(50)
+            # PostgreSQL ARRAY → list-aware JSON text
+            elif col.type.__class__.__name__ == "ARRAY":
+                col.type = SQLiteArrayJSON()
+            # PostgreSQL JSONB → JSON
+            elif col.type.__class__.__name__ == "JSONB":
+                col.type = sa.JSON()
+            # PostgreSQL Numeric → Float
+            elif col.type.__class__.__name__ == "Numeric":
                 col.type = sa.Float()
 
     Base.metadata.create_all(conn)

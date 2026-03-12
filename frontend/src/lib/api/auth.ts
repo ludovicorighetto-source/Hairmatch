@@ -7,7 +7,7 @@ import type {
   RefreshResponse,
   ApiError,
 } from "@/types/auth";
-import { useAuthStore } from "@/lib/auth/context";
+import { useAuthStore } from "@/lib/auth/store";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
