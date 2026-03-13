@@ -232,7 +232,7 @@ export function ProfessionalRegisterForm() {
         preferred_city: values.preferred_city || undefined,
         preferred_province: values.preferred_province || undefined,
       });
-      router.push("/register/professional/confirm");
+      router.push(`/register/professional/confirm?email=${encodeURIComponent(values.email)}`);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.statusCode === 409) {

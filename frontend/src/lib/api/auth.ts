@@ -174,3 +174,22 @@ export async function apiResendVerification(email: string): Promise<{ message: s
     skipAuth: true,
   });
 }
+
+export async function apiRequestPasswordReset(email: string): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/request-password-reset", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+    skipAuth: true,
+  });
+}
+
+export async function apiResetPassword(
+  accessToken: string,
+  newPassword: string
+): Promise<{ message: string }> {
+  return apiFetch<{ message: string }>("/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ access_token: accessToken, new_password: newPassword }),
+    skipAuth: true,
+  });
+}

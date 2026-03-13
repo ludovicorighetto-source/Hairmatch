@@ -175,7 +175,7 @@ export function SalonRegisterForm() {
         vat_number: values.vat_number || undefined,
         website: values.website || undefined,
       });
-      router.push("/register/salon/confirm");
+      router.push(`/register/salon/confirm?email=${encodeURIComponent(values.email)}`);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.statusCode === 409) {

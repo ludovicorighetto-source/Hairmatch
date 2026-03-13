@@ -25,6 +25,12 @@ from app.api.v1.auth.schemas import (
     RegisterProfessionalResponse,
     RegisterSalonRequest,
     RegisterSalonResponse,
+    RequestPasswordResetRequest,
+    RequestPasswordResetResponse,
+    ResendVerificationRequest,
+    ResendVerificationResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
 )
 from app.api.v1.auth.service import AuthService
 from app.api.v1.auth.supabase_client import supabase_auth
@@ -160,3 +166,74 @@ async def me(
     service: AuthService = Depends(_get_service),
 ) -> MeResponse:
     return await service.get_current_user_profile(user_id)
+
+
+# ── Resend Verification (AUTH-002) ─────────────────────────────────────────────
+
+@router.post(
+    "/resend-verification",
+    response_model=ResendVerificationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Resend email verification link (rate limited: 3/10min per IP)",
+)
+async def resend_verification(
+    request: Request,
+    payload: ResendVerificationRequest,
+    service: AuthService = Depends(_get_service),
+) -> ResendVerificationResponse:
+    return await service.resend_verification(payload)
+
+
+def _apply_resend_rate_limit() -> None:
+    try:
+        from app.main import limiter  # noqa: PLC0415
+
+        limiter.limit("3/10minutes")(resend_verification)
+    except ImportError:
+        pass
+
+
+_apply_resend_rate_limit()
+
+
+# ── Request Password Reset (AUTH-003) ──────────────────────────────────────────
+
+@router.post(
+    "/request-password-reset",
+    response_model=RequestPasswordResetResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Request a password-reset email (rate limited: 3/10min per IP)",
+)
+async def request_password_reset(
+    request: Request,
+    payload: RequestPasswordResetRequest,
+    service: AuthService = Depends(_get_service),
+) -> RequestPasswordResetResponse:
+    return await service.request_password_reset(payload)
+
+
+def _apply_reset_request_rate_limit() -> None:
+    try:
+        from app.main import limiter  # noqa: PLC0415
+
+        limiter.limit("3/10minutes")(request_password_reset)
+    except ImportError:
+        pass
+
+
+_apply_reset_request_rate_limit()
+
+
+# ── Reset Password (AUTH-003) ───────────────────────────────────────────────────
+
+@router.post(
+    "/reset-password",
+    response_model=ResetPasswordResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Set a new password using the recovery token received by email",
+)
+async def reset_password(
+    payload: ResetPasswordRequest,
+    service: AuthService = Depends(_get_service),
+) -> ResetPasswordResponse:
+    return await service.reset_password(payload)

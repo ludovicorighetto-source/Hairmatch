@@ -249,3 +249,46 @@ class MeProfessionalResponse(BaseModel):
 class MeResponse(BaseModel):
     user: UserProfileResponse
     profile: SalonProfileResponse | ProfessionalProfileResponse
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Resend Verification (AUTH-002)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class ResendVerificationRequest(BaseModel):
+    email: EmailStr
+
+
+class ResendVerificationResponse(BaseModel):
+    message: str = (
+        "Se l'email è registrata e non ancora verificata, riceverai un nuovo link a breve."
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Password Reset (AUTH-003)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class RequestPasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class RequestPasswordResetResponse(BaseModel):
+    message: str = "Se l'email è registrata, riceverai le istruzioni per reimpostare la password."
+
+
+class ResetPasswordRequest(BaseModel):
+    access_token: str = Field(..., description="Token ricevuto via email da Supabase")
+    new_password: str = Field(..., min_length=8)
+
+    @field_validator("new_password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        validate_password_strength(v)
+        return v
+
+
+class ResetPasswordResponse(BaseModel):
+    message: str = "Password reimpostata con successo."

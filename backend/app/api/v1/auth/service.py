@@ -26,6 +26,12 @@ from app.api.v1.auth.schemas import (
     RegisterProfessionalResponse,
     RegisterSalonRequest,
     RegisterSalonResponse,
+    RequestPasswordResetRequest,
+    RequestPasswordResetResponse,
+    ResendVerificationRequest,
+    ResendVerificationResponse,
+    ResetPasswordRequest,
+    ResetPasswordResponse,
     TokenPair,
 )
 from app.api.v1.auth.supabase_client import SupabaseAuthClient
@@ -350,3 +356,45 @@ class AuthService:
             user=user,  # type: ignore[arg-type]
             profile=profile,  # type: ignore[arg-type]
         )
+
+    # ── Resend Verification (AUTH-002) ─────────────────────────────────────────
+
+    async def resend_verification(
+        self, payload: ResendVerificationRequest
+    ) -> ResendVerificationResponse:
+        """
+        Re-send the email confirmation link via Supabase.
+
+        Always returns a generic success message to prevent user enumeration.
+        """
+        try:
+            await self._supabase.resend_verification_email(payload.email)
+        except ExternalServiceError as exc:
+            logger.warning("resend_verification: Supabase error for %s: %s", payload.email, exc)
+            # Do not surface the error to the client – return generic success
+        return ResendVerificationResponse()
+
+    # ── Request Password Reset (AUTH-003) ──────────────────────────────────────
+
+    async def request_password_reset(
+        self, payload: RequestPasswordResetRequest
+    ) -> RequestPasswordResetResponse:
+        """
+        Trigger a Supabase password-reset email.
+
+        Always returns a generic success to prevent user enumeration.
+        """
+        try:
+            await self._supabase.send_password_reset_email(payload.email)
+        except ExternalServiceError as exc:
+            logger.warning("request_password_reset: Supabase error for %s: %s", payload.email, exc)
+        return RequestPasswordResetResponse()
+
+    # ── Reset Password (AUTH-003) ──────────────────────────────────────────────
+
+    async def reset_password(self, payload: ResetPasswordRequest) -> ResetPasswordResponse:
+        """
+        Update the user's password using the recovery access token from Supabase.
+        """
+        await self._supabase.update_user_password(payload.access_token, payload.new_password)
+        return ResetPasswordResponse()

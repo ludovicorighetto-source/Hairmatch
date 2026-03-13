@@ -190,6 +190,67 @@ class SupabaseAuthClient:
                 resp.status_code,
             )
 
+    # ── Resend verification email ──────────────────────────────────────────────
+
+    async def resend_verification_email(self, email: str) -> None:
+        """
+        Ask Supabase to re-send the email-confirmation link.
+
+        Uses the /auth/v1/resend endpoint (Supabase ≥ 2.x).
+        Returns a generic success even for unknown emails to prevent user enumeration.
+        """
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{_AUTH_BASE}/resend",
+                headers=_ANON_HEADERS,
+                json={"type": "signup", "email": email},
+                timeout=10.0,
+            )
+        # 200/204 = success; 422 = email already confirmed – all acceptable
+        if resp.status_code not in (200, 204, 422):
+            raise ExternalServiceError(
+                f"Supabase resend-verification failed ({resp.status_code})"
+            )
+
+    # ── Password reset ─────────────────────────────────────────────────────────
+
+    async def send_password_reset_email(self, email: str) -> None:
+        """
+        Send a Supabase password-recovery email.
+
+        Uses POST /auth/v1/recover – returns 200 on success.
+        """
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"{_AUTH_BASE}/recover",
+                headers=_ANON_HEADERS,
+                json={"email": email},
+                timeout=10.0,
+            )
+        if resp.status_code not in (200, 204):
+            raise ExternalServiceError(
+                f"Supabase password-reset email failed ({resp.status_code})"
+            )
+
+    async def update_user_password(self, access_token: str, new_password: str) -> None:
+        """
+        Update a user's password via their recovery access token.
+
+        Uses PUT /auth/v1/user with the user's Bearer token.
+        """
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(
+                f"{_AUTH_BASE}/user",
+                headers=_user_headers(access_token),
+                json={"password": new_password},
+                timeout=10.0,
+            )
+        if resp.status_code not in (200, 204):
+            body = resp.json()
+            raise ExternalServiceError(
+                f"Supabase update-password failed ({resp.status_code}): {body}"
+            )
+
     # ── Get user (admin) ───────────────────────────────────────────────────────
 
     async def get_user(self, user_id: uuid.UUID) -> Optional[dict[str, Any]]:

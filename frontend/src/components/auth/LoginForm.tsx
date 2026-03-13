@@ -216,6 +216,15 @@ export function LoginForm() {
           )}
         />
 
+        <div className="text-right">
+          <Link
+            href="/request-reset"
+            className="text-xs text-indigo-600 hover:underline"
+          >
+            Password dimenticata?
+          </Link>
+        </div>
+
         <Button
           type="submit"
           className="w-full bg-indigo-600 hover:bg-indigo-700"
