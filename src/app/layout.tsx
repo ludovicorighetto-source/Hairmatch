@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   },
   description:
     "HairMatch mette in contatto saloni di bellezza con i migliori professionisti del settore.",
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
 };
 
 export default function RootLayout({
