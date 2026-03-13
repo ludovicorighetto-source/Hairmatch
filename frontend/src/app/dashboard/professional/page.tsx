@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Briefcase,
   Building2,
@@ -10,6 +11,7 @@ import {
   TrendingUp,
   ToggleLeft,
   ToggleRight,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
@@ -184,14 +186,11 @@ export default function ProfessionalDashboardPage() {
               Esplora le posizioni aperte nei saloni della tua zona e candidati
               con un click.
             </p>
-            <Button
-              className="bg-violet-600 hover:bg-violet-700"
-              disabled
-              title="Funzionalità in arrivo"
-            >
-              Cerca offerte
-            </Button>
-            <p className="mt-2 text-xs text-gray-400">Disponibile a breve</p>
+            <Link href="/dashboard/professional/search">
+              <Button className="bg-violet-600 hover:bg-violet-700">
+                Cerca saloni
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 
@@ -207,15 +206,14 @@ export default function ProfessionalDashboardPage() {
               Scopri i saloni nelle vicinanze e invia una candidatura spontanea
               per farti notare.
             </p>
-            <Button
-              variant="outline"
-              className="border-indigo-500 text-indigo-700 hover:bg-indigo-50"
-              disabled
-              title="Funzionalità in arrivo"
-            >
-              Cerca saloni
-            </Button>
-            <p className="mt-2 text-xs text-gray-400">Disponibile a breve</p>
+            <Link href="/dashboard/professional/settings">
+              <Button
+                variant="outline"
+                className="border-indigo-500 text-indigo-700 hover:bg-indigo-50"
+              >
+                Impostazioni profilo
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

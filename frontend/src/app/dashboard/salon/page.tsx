@@ -165,15 +165,14 @@ export default function SalonDashboardPage() {
               Esplora i profili dei professionisti disponibili nella tua zona
               e contattali direttamente.
             </p>
-            <Button
-              variant="outline"
-              className="border-violet-500 text-violet-700 hover:bg-violet-50"
-              disabled
-              title="Funzionalità in arrivo"
-            >
-              Cerca professionisti
-            </Button>
-            <p className="mt-2 text-xs text-gray-400">Disponibile a breve</p>
+            <Link href="/dashboard/salon/search">
+              <Button
+                variant="outline"
+                className="border-violet-500 text-violet-700 hover:bg-violet-50"
+              >
+                Cerca professionisti
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       </div>
