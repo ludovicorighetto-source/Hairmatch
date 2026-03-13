@@ -24,9 +24,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { RecommendedJobsPanel } from "@/components/matching/RecommendedJobsPanel";
 
 export default function ProfessionalDashboardPage() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, accessToken, logout, isLoading } = useAuth();
   const router = useRouter();
   const [isAvailable, setIsAvailable] = useState(true);
 
@@ -217,6 +218,9 @@ export default function ProfessionalDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recommended jobs */}
+      {accessToken && <RecommendedJobsPanel token={accessToken} />}
 
       {/* Account info */}
       <Card>

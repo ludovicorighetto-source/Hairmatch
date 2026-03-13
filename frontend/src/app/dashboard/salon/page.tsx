@@ -20,9 +20,10 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { TopMatchesPanel } from "@/components/matching/TopMatchesPanel";
 
 export default function SalonDashboardPage() {
-  const { user, logout, isLoading } = useAuth();
+  const { user, accessToken, logout, isLoading } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -173,6 +174,9 @@ export default function SalonDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Top matches */}
+      {accessToken && <TopMatchesPanel token={accessToken} />}
 
       {/* Account info */}
       <Card>
