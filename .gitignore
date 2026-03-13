@@ -22,3 +22,4 @@ out/
 # OS
 .DS_Store
 Thumbs.db
+frontend/tsconfig.tsbuildinfo
