@@ -69,12 +69,14 @@ def create_app() -> FastAPI:
     from app.api.v1.search.router import router as search_router  # noqa: PLC0415
     from app.api.v1.jobs.router import router as jobs_router  # noqa: PLC0415
     from app.api.v1.matching.router import router as matching_router  # noqa: PLC0415
+    from app.api.v1.messages.router import router as messages_router  # noqa: PLC0415
 
     app.include_router(auth_router, prefix="/api/v1")
     app.include_router(profiles_router, prefix="/api/v1")
     app.include_router(search_router, prefix="/api/v1")
     app.include_router(jobs_router, prefix="/api/v1")
     app.include_router(matching_router, prefix="/api/v1")
+    app.include_router(messages_router, prefix="/api/v1")
 
     # ── Health check ───────────────────────────────────────────────────────────
     @app.get("/health", tags=["health"], include_in_schema=False)

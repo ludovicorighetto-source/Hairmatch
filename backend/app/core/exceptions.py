@@ -124,3 +124,13 @@ class PermissionDeniedError(HTTPException):
             status_code=status.HTTP_403_FORBIDDEN,
             detail=detail,
         )
+
+
+class NotFoundError(HTTPException):
+    """Raised when a requested resource cannot be found."""
+
+    def __init__(self, detail: str = "Not found") -> None:
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=detail,
+        )
