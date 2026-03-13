@@ -43,16 +43,20 @@ def validate_password_strength(password: str) -> None:
 
 def verify_supabase_jwt(token: str) -> dict:
     """
-    Verify a Supabase-issued JWT and return its payload.
+    Verify a JWT and return its payload.
+
+    In DEV_MODE the token is signed with SECRET_KEY (local dev client).
+    In production the token is a Supabase-issued JWT signed with SUPABASE_JWT_SECRET.
 
     Raises:
         ExpiredTokenError: if the token has expired.
         InvalidTokenError: if the token is malformed or the signature is wrong.
     """
+    secret = settings.SECRET_KEY if settings.DEV_MODE else settings.SUPABASE_JWT_SECRET
     try:
         payload = jwt.decode(
             token,
-            settings.SUPABASE_JWT_SECRET,
+            secret,
             algorithms=["HS256"],
             options={"verify_aud": False},
         )

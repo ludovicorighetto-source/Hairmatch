@@ -270,5 +270,11 @@ class SupabaseAuthClient:
         return resp.json()
 
 
+    # ── Role update hook (no-op for real Supabase) ─────────────────────────────
+
+    def set_user_role(self, email: str, role: str) -> None:
+        """No-op for real Supabase – role is stored in the DB only."""
+
+
 # Module-level singleton so it can be imported directly
 supabase_auth = SupabaseAuthClient()

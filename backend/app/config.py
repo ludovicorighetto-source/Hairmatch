@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     DEBUG: bool = False
     SECRET_KEY: str = "change-me-in-production"
+    DEV_MODE: bool = False  # When True, bypasses Supabase – never use in production
 
     # ─── Database ─────────────────────────────────────────────────────────────────
     DATABASE_URL: str = "postgresql+asyncpg://hairmatch:hairmatch_secret@localhost:5432/hairmatch_db"
