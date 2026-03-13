@@ -1,6 +1,6 @@
-import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+
+const nextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: ["localhost:3000"],
