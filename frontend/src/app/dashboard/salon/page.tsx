@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Briefcase,
   Users,
@@ -8,6 +9,7 @@ import {
   Loader2,
   Building2,
   TrendingUp,
+  Settings,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -52,11 +54,18 @@ export default function SalonDashboardPage() {
             Gestisci il tuo salone e trova i migliori professionisti.
           </p>
         </div>
-        <Button
+        <div className="flex items-center gap-2 self-start">
+          <Link href="/dashboard/salon/settings">
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Impostazioni
+            </Button>
+          </Link>
+          <Button
           variant="outline"
           onClick={handleLogout}
           disabled={isLoading}
-          className="flex items-center gap-2 self-start"
+          className="flex items-center gap-2"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -65,6 +74,7 @@ export default function SalonDashboardPage() {
           )}
           Esci
         </Button>
+        </div>
       </div>
 
       {/* Stats overview */}

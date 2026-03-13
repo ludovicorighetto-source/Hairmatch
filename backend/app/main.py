@@ -65,8 +65,10 @@ def create_app() -> FastAPI:
     # ── Routers ────────────────────────────────────────────────────────────────
     # Import here to avoid circular imports at module load time
     from app.api.v1.auth.router import router as auth_router  # noqa: PLC0415
+    from app.api.v1.profiles.router import router as profiles_router  # noqa: PLC0415
 
     app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(profiles_router, prefix="/api/v1")
 
     # ── Health check ───────────────────────────────────────────────────────────
     @app.get("/health", tags=["health"], include_in_schema=False)
