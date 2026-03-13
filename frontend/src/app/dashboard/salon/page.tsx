@@ -142,14 +142,11 @@ export default function SalonDashboardPage() {
               Descrivi la posizione che cerchi e inizia a ricevere candidature
               dai professionisti qualificati nella tua zona.
             </p>
-            <Button
-              className="bg-indigo-600 hover:bg-indigo-700"
-              disabled
-              title="Funzionalità in arrivo"
-            >
-              Crea annuncio
-            </Button>
-            <p className="mt-2 text-xs text-gray-400">Disponibile a breve</p>
+            <Link href="/dashboard/salon/jobs">
+              <Button className="bg-indigo-600 hover:bg-indigo-700">
+                Gestisci annunci
+              </Button>
+            </Link>
           </CardContent>
         </Card>
 

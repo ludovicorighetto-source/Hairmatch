@@ -186,9 +186,9 @@ export default function ProfessionalDashboardPage() {
               Esplora le posizioni aperte nei saloni della tua zona e candidati
               con un click.
             </p>
-            <Link href="/dashboard/professional/search">
+            <Link href="/dashboard/professional/jobs">
               <Button className="bg-violet-600 hover:bg-violet-700">
-                Cerca saloni
+                Cerca offerte
               </Button>
             </Link>
           </CardContent>

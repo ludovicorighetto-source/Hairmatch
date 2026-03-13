@@ -19,6 +19,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 # Importing Base and all models registers their metadata.
 from app.database import Base  # noqa: F401
 from app.models import (  # noqa: F401
+    JobApplication,
+    JobPosting,
     ProfessionalProfile,
     SalonProfile,
     UserProfile,

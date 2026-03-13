@@ -40,3 +40,29 @@ availability_status_enum = SAEnum(
     name="availability_status",
     create_type=False,
 )
+
+
+class JobStatus(str, enum.Enum):
+    draft = "draft"
+    open = "open"
+    closed = "closed"
+
+
+class ApplicationStatus(str, enum.Enum):
+    pending = "pending"
+    accepted = "accepted"
+    rejected = "rejected"
+    withdrawn = "withdrawn"
+
+
+job_status_enum = SAEnum(
+    JobStatus,
+    name="job_status",
+    create_type=False,
+)
+
+application_status_enum = SAEnum(
+    ApplicationStatus,
+    name="application_status",
+    create_type=False,
+)
